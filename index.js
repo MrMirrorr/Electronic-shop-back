@@ -3,10 +3,13 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
-import { registerValidation } from './validations/auth.js';
+import { registerValidation, loginValidation } from './validations.js';
 import checkAuth from './middlewares/check-auth.js';
 import hasRole from './middlewares/has-role.js';
 import * as UserController from './controllers/user.js';
+import * as CategoryController from './controllers/category.js';
+import * as ProductController from './controllers/product.js';
+import * as CommentController from './controllers/comment.js';
 import { ROLE } from './constants/roles.js';
 
 mongoose
@@ -20,19 +23,41 @@ const port = 3001;
 app.use(express.json());
 app.use(cookieParser());
 
+// user
 app.post('/auth/register', registerValidation, UserController.register);
-
-app.post('/auth/login', UserController.login);
-
+app.post('/auth/login', loginValidation, UserController.login);
 app.post('/auth/logout', UserController.logout);
+app.get('/users', checkAuth, hasRole([ROLE.ADMIN]), UserController.getAllUsers);
+app.get('/users/roles', checkAuth, hasRole([ROLE.ADMIN]), UserController.getAllRoles);
+app.patch('/users/:id', checkAuth, hasRole([ROLE.ADMIN]), UserController.update);
+app.delete('/users/:id', checkAuth, hasRole([ROLE.ADMIN]), UserController.remove);
 
-app.get('/users', checkAuth, hasRole([ROLE.ADMIN]), UserController.getUsers);
+// category
+app.post('/categories', checkAuth, hasRole([ROLE.ADMIN]), CategoryController.create);
+app.get('/categories', CategoryController.getAll);
+app.patch('/categories/:id', checkAuth, hasRole([ROLE.ADMIN]), CategoryController.update);
+app.delete(
+	'/categories/:id',
+	checkAuth,
+	hasRole([ROLE.ADMIN]),
+	CategoryController.remove,
+);
 
-app.get('/users/roles', checkAuth, hasRole([ROLE.ADMIN]), UserController.getRoles);
+// product
+app.post('/products', checkAuth, hasRole([ROLE.ADMIN]), ProductController.create);
+app.get('/products', ProductController.getAll);
+app.get('/products/:id', ProductController.getOne);
+app.patch('/products/:id', checkAuth, hasRole([ROLE.ADMIN]), ProductController.update);
+app.delete('/products/:id', checkAuth, hasRole([ROLE.ADMIN]), ProductController.remove);
 
-app.patch('/users/:id', checkAuth, hasRole([ROLE.ADMIN]), UserController.updateUser);
-
-app.delete('/users/:id', checkAuth, hasRole([ROLE.ADMIN]), UserController.deleteUser);
+// comment
+app.post('/products/:id/comments', checkAuth, CommentController.create);
+app.delete(
+	'/products/:productId/comments/:commentId',
+	checkAuth,
+	hasRole([ROLE.ADMIN]),
+	CommentController.remove,
+);
 
 app.listen(port, (err) =>
 	err ? console.log('Server error', err) : console.log(`Server OK | Port: ${port}`),

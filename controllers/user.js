@@ -48,6 +48,11 @@ export const register = async (req, res) => {
 // login
 export const login = async (req, res) => {
 	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).send(errors.array());
+		}
+
 		const user = await UserModel.findOne({ email: req.body.email });
 
 		if (!user) {
@@ -96,7 +101,7 @@ export const logout = (_, res) => {
 };
 
 // get all users
-export const getUsers = async (_, res) => {
+export const getAllUsers = async (_, res) => {
 	try {
 		const users = await UserModel.find();
 
@@ -113,7 +118,7 @@ export const getUsers = async (_, res) => {
 };
 
 // get all roles
-export const getRoles = async (_, res) => {
+export const getAllRoles = async (_, res) => {
 	const roles = [
 		{ id: ROLE.ADMIN, name: 'Администратор' },
 		{ id: ROLE.USER, name: 'Пользователь' },
@@ -125,7 +130,7 @@ export const getRoles = async (_, res) => {
 };
 
 // delete
-export const deleteUser = async (req, res) => {
+export const remove = async (req, res) => {
 	try {
 		const userId = req.params.id;
 		await UserModel.deleteOne({ _id: userId });
@@ -144,7 +149,7 @@ export const deleteUser = async (req, res) => {
 };
 
 // edit (roles)
-export const updateUser = async (req, res) => {
+export const update = async (req, res) => {
 	try {
 		const userId = req.params.id;
 		const newRoleId = req.body.roleId;
