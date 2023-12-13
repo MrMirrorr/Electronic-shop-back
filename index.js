@@ -10,6 +10,8 @@ import * as UserController from './controllers/user.js';
 import * as CategoryController from './controllers/category.js';
 import * as ProductController from './controllers/product.js';
 import * as CommentController from './controllers/comment.js';
+import * as CartController from './controllers/cart.js';
+import * as CartItemController from './controllers/cart-item.js';
 import { ROLE } from './constants/roles.js';
 
 mongoose
@@ -58,6 +60,14 @@ app.delete(
 	hasRole([ROLE.ADMIN]),
 	CommentController.remove,
 );
+
+// cart
+app.post('/carts', checkAuth, CartController.create);
+app.get('/carts', checkAuth, CartController.getOne);
+
+// cart item
+app.post('/carts/items', checkAuth, CartItemController.create);
+app.delete('/carts/:cartId/items/:itemId', checkAuth, CartItemController.remove);
 
 app.listen(port, (err) =>
 	err ? console.log('Server error', err) : console.log(`Server OK | Port: ${port}`),

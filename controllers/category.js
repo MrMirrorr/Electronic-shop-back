@@ -13,6 +13,7 @@ export const create = async (req, res) => {
 			data: mapCategory(category),
 		});
 	} catch (err) {
+		console.log(err);
 		res.status(500).send({
 			error: 'Не удалось создать категорию',
 		});

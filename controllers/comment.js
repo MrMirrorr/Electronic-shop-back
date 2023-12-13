@@ -25,6 +25,7 @@ export const create = async (req, res) => {
 			data: mapComment(newComment),
 		});
 	} catch (err) {
+		console.log(err);
 		res.status(500).send({
 			error: 'Не удалось создать комментарий',
 		});
