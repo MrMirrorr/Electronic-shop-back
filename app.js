@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/auth-routes.js';
+import userRoutes from './routes/user-routes.js';
 import categoryRoutes from './routes/category-routes.js';
 import productRoutes from './routes/product-routes.js';
 import commentRoutes from './routes/comment-routes.js';
@@ -21,8 +22,11 @@ const port = 3001;
 app.use(express.json());
 app.use(cookieParser());
 
-// user
+// auth
 app.use('/auth', authRoutes);
+
+// user
+app.use('/users', userRoutes);
 
 // category
 app.use('/categories', categoryRoutes);

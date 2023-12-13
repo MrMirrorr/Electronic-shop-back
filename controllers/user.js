@@ -60,7 +60,7 @@ export const login = async (req, res) => {
 				error: 'Пользователь не найден',
 			});
 		}
-		console.log(user);
+
 		const isValidPass = await bcrypt.compare(req.body.password, user.password);
 
 		if (!isValidPass) {
