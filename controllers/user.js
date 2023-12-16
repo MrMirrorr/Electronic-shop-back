@@ -50,7 +50,7 @@ export const login = async (req, res) => {
 	try {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			return res.status(400).send(errors.array());
+			return res.status(400).send(errors.array()[0]);
 		}
 
 		const user = await UserModel.findOne({ email: req.body.email });
@@ -81,6 +81,29 @@ export const login = async (req, res) => {
 		console.log(err);
 		res.status(500).send({
 			error: 'Не удалось авторизоваться',
+		});
+	}
+};
+
+// getMe
+export const getMe = async (req, res) => {
+	try {
+		const user = await UserModel.findById(req.user.id);
+
+		if (!user) {
+			return res.status(404).send({
+				error: 'Пользователь не найден',
+			});
+		}
+
+		res.send({
+			error: null,
+			data: mapUser(user),
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).send({
+			error: 'Нет доступа',
 		});
 	}
 };

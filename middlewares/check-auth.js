@@ -20,7 +20,7 @@ export default async (req, res, next) => {
 			next();
 		} catch (err) {
 			return res.status(403).send({
-				error: 'Отсутствует аутентификация',
+				error: 'Неизвестные проблемы с аутентификацией',
 			});
 		}
 	} else {
