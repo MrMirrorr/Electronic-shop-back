@@ -29,16 +29,24 @@ export const getAll = async (req, res) => {
 	try {
 		const searchPhrase = req.query.search || '';
 		const limit = req.query.limit || 10;
-		const currentPage = req.query.page || 1;
+		const page = req.query.page || 1;
+		const category = req.query.category || '';
+		const sort = req.query.sort || 'asc';
+
+		const findQuery = {
+			title: { $regex: searchPhrase, $options: 'i' },
+		};
+
+		if (category) {
+			findQuery.categoryId = category;
+		}
 
 		const [products, count] = await Promise.all([
-			ProductModel.find({ title: { $regex: searchPhrase, $options: 'i' } })
+			ProductModel.find(findQuery)
 				.limit(limit)
-				.skip((currentPage - 1) * limit)
-				.sort({ createdAt: -1 }),
-			ProductModel.countDocuments({
-				title: { $regex: searchPhrase, $options: 'i' },
-			}),
+				.skip((page - 1) * limit)
+				.sort({ price: sort === 'asc' ? 1 : -1 }),
+			ProductModel.countDocuments(findQuery),
 		]);
 
 		res.send({
