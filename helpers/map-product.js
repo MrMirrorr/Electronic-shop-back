@@ -7,6 +7,7 @@ export default (product) => ({
 	categoryId: product.categoryId,
 	price: product.price,
 	amount: product.amount,
+	imageUrl: product.imageUrl,
 	description: product.description,
 	createdAt: product.createdAt,
 	comments: product.comments.map((comment) =>

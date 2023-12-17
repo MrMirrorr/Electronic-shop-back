@@ -43,6 +43,7 @@ export const getAll = async (req, res) => {
 
 		const [products, count] = await Promise.all([
 			ProductModel.find(findQuery)
+				.populate('categoryId')
 				.limit(limit)
 				.skip((page - 1) * limit)
 				.sort({ price: sort === 'asc' ? 1 : -1 }),
