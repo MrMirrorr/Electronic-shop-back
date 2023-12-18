@@ -192,7 +192,7 @@ export const update = async (req, res) => {
 	} catch (err) {
 		console.log(err);
 		res.status(500).send({
-			error: 'Не удалось удалить пользователя',
+			error: 'Не удалось изменить роль пользователя',
 			success: false,
 		});
 	}
