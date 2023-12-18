@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+import { validationResult } from 'express-validator';
 import mapComment from '../helpers/map-comment.js';
 import CommentModel from '../models/Comment.js';
 import ProductModel from '../models/Product.js';
@@ -5,6 +7,11 @@ import ProductModel from '../models/Product.js';
 // create new comment
 export const create = async (req, res) => {
 	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).send(errors.array()[0]);
+		}
+
 		const content = req.body.content;
 		const productId = req.params.id;
 		const author = req.user.id;

@@ -1,5 +1,6 @@
 import CartModel from '../models/Cart.js';
 import CartItemModel from '../models/CartItem.js';
+import mapCartItem from '../helpers/map-cart-item.js';
 
 // create cart item
 export const create = async (req, res) => {
@@ -8,12 +9,9 @@ export const create = async (req, res) => {
 		const { productId, quantity } = req.body;
 
 		let cart = await CartModel.findOne({ userId });
-		console.log(cart);
 
 		if (!cart) {
-			cart = await CartModel.create({
-				userId,
-			});
+			cart = await CartModel.create({ userId });
 		}
 
 		let cartItem = await CartItemModel.findOne({ cartId: cart._id, productId });
@@ -31,11 +29,13 @@ export const create = async (req, res) => {
 			await cart.save();
 		}
 
+		await cartItem.populate('productId');
+
 		res.send({
 			error: null,
-			data: { cart, cartItem },
+			data: { cartItem: mapCartItem(cartItem) },
 		});
-	} catch (error) {
+	} catch (err) {
 		console.log(err);
 		res.status(500).send({
 			error: 'Не удалось добавить товар в корзину',
@@ -47,11 +47,13 @@ export const create = async (req, res) => {
 
 export const remove = async (req, res) => {
 	try {
-		const cartId = req.params.cartId;
+		const userId = req.user.id;
 		const itemId = req.params.itemId;
 
+		let cart = await CartModel.findOne({ userId });
+
 		await CartItemModel.deleteOne({ _id: itemId });
-		await CartModel.findByIdAndUpdate(cartId, {
+		await CartModel.findByIdAndUpdate(cart._id, {
 			$pull: { items: itemId },
 		});
 

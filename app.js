@@ -38,10 +38,10 @@ app.use('/products', productRoutes);
 app.use('/products', commentRoutes);
 
 // cart
-app.use('/carts', cartRoutes);
+app.use('/cart', cartRoutes);
 
 // cart item
-app.use('/carts', cartItemRoutes);
+app.use('/items', cartItemRoutes);
 
 app.listen(port, (err) =>
 	err ? console.log('Server error', err) : console.log(`Server OK | Port: ${port}`),

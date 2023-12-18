@@ -1,4 +1,5 @@
 import CartModel from '../models/Cart.js';
+import mapCart from '../helpers/map-cart.js';
 
 // create cart
 export const create = async (req, res) => {
@@ -37,7 +38,7 @@ export const getOne = async (req, res) => {
 
 		res.send({
 			error: null,
-			data: cart,
+			data: mapCart(cart),
 		});
 	} catch (err) {
 		console.log(err);

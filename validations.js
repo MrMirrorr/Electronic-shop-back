@@ -30,3 +30,7 @@ export const productCreateValidation = [
 		.isLength({ min: 5 })
 		.isString(),
 ];
+
+export const commentCreateValidation = [
+	body('content', 'Нечего отправлять. Вы не ввели комментарий.').isLength({ min: 1 }),
+];
