@@ -8,7 +8,8 @@ const router = express.Router();
 
 router.get('/', checkAuth, hasRole([ROLE.ADMIN]), UserController.getAllUsers);
 router.get('/roles', checkAuth, hasRole([ROLE.ADMIN]), UserController.getAllRoles);
-router.patch('/:id', checkAuth, hasRole([ROLE.ADMIN]), UserController.update);
+router.patch('/:id/role', checkAuth, hasRole([ROLE.ADMIN]), UserController.updateRoleId);
+router.patch('/user', checkAuth, UserController.update);
 router.delete('/:id', checkAuth, hasRole([ROLE.ADMIN]), UserController.remove);
 
 export default router;

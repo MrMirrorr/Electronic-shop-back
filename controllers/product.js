@@ -1,5 +1,6 @@
 import mapProduct from '../helpers/map-product.js';
 import ProductModel from '../models/Product.js';
+import CommentModel from '../models/Comment.js';
 
 // create new product
 export const create = async (req, res) => {
@@ -92,6 +93,13 @@ export const getOne = async (req, res) => {
 export const remove = async (req, res) => {
 	try {
 		const productId = req.params.id;
+
+		const product = await ProductModel.findOne({ _id: productId });
+
+		const commentsToDelete = product.comments.map((comment) => comment._id);
+
+		await CommentModel.deleteMany({ _id: { $in: commentsToDelete } });
+
 		await ProductModel.deleteOne({ _id: productId });
 
 		res.send({

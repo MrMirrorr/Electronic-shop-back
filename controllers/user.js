@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import UserModel from '../models/User.js';
 import CartModel from '../models/Cart.js';
 import CartItemModel from '../models/CartItem.js';
+import OrderModel from '../models/Order.js';
+import CommentModel from '../models/Comment.js';
 import mapUser from '../helpers/map-user.js';
 import { generateToken } from '../helpers/token.js';
 import { ROLE } from '../constants/roles.js';
@@ -26,7 +28,7 @@ export const register = async (req, res) => {
 			password: passwordHash,
 		});
 
-		const userId = user.id;
+		const userId = user._id;
 
 		await CartModel.create({ userId });
 
@@ -165,9 +167,15 @@ export const remove = async (req, res) => {
 
 		const cart = await CartModel.findOne({ userId });
 
+		await FavoriteModel.deleteMany({ userId });
+
 		await CartItemModel.deleteMany({ cartId: cart._id });
 
 		await CartModel.deleteOne({ _id: cart._id });
+
+		await OrderModel.deleteMany({ user: userId });
+
+		await CommentModel.deleteMany({ author: userId });
 
 		await UserModel.deleteOne({ _id: userId });
 
@@ -185,7 +193,7 @@ export const remove = async (req, res) => {
 };
 
 // edit (roles)
-export const update = async (req, res) => {
+export const updateRoleId = async (req, res) => {
 	try {
 		const userId = req.params.id;
 		const newRoleId = req.body.roleId;
@@ -206,6 +214,34 @@ export const update = async (req, res) => {
 		console.log(err);
 		res.status(500).send({
 			error: 'Не удалось изменить роль пользователя',
+			success: false,
+		});
+	}
+};
+
+// edit (user)
+export const update = async (req, res) => {
+	try {
+		const userId = req.user.id;
+		const newUserData = { email: req.body.email, fullName: req.body.fullName };
+
+		const newUser = await UserModel.findByIdAndUpdate(userId, newUserData, {
+			returnDocument: 'after',
+		});
+
+		res.send({
+			error: null,
+			data: mapUser(newUser),
+		});
+	} catch (err) {
+		console.log(err);
+		if (err.code === 11000) {
+			return res.status(500).send({
+				error: 'Этот email уже занят',
+			});
+		}
+		res.status(500).send({
+			error: 'Не удалось изменить данные пользователя',
 			success: false,
 		});
 	}
