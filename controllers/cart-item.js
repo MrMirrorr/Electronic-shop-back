@@ -17,6 +17,11 @@ export const create = async (req, res) => {
 		let cartItem = await CartItemModel.findOne({ cartId: cart._id, productId });
 
 		if (cartItem) {
+			if (cartItem.quantity === 1 && quantity === -1) {
+				return res.status(400).send({
+					error: 'Количество товара в корзине не может быть меньше 1',
+				});
+			}
 			cartItem.quantity += quantity;
 			await cartItem.save();
 		} else {
@@ -50,7 +55,7 @@ export const remove = async (req, res) => {
 		const userId = req.user.id;
 		const itemId = req.params.itemId;
 
-		let cart = await CartModel.findOne({ userId });
+		const cart = await CartModel.findOne({ userId });
 
 		await CartItemModel.deleteOne({ _id: itemId });
 		await CartModel.findByIdAndUpdate(cart._id, {
@@ -65,6 +70,29 @@ export const remove = async (req, res) => {
 		console.log(err);
 		res.status(500).send({
 			error: 'Не удалось удалить товар из корзины',
+			success: false,
+		});
+	}
+};
+
+// delete many
+
+export const removeMany = async (req, res) => {
+	try {
+		const cartId = req.params.cartId;
+
+		await CartItemModel.deleteMany({ cartId });
+
+		await CartModel.findByIdAndUpdate(cartId, { items: [] });
+
+		res.send({
+			error: null,
+			success: true,
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).send({
+			error: 'Не удалось удалить товары из корзины',
 			success: false,
 		});
 	}

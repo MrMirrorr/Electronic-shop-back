@@ -10,6 +10,7 @@ import productRoutes from './routes/product-routes.js';
 import commentRoutes from './routes/comment-routes.js';
 import cartRoutes from './routes/cart-routes.js';
 import cartItemRoutes from './routes/cart-item-routes.js';
+import orderRoutes from './routes/order-routes.js';
 
 mongoose
 	.connect(process.env.DB_CONNECTION_STRING)
@@ -42,6 +43,9 @@ app.use('/cart', cartRoutes);
 
 // cart item
 app.use('/items', cartItemRoutes);
+
+// order
+app.use('/orders', orderRoutes);
 
 app.listen(port, (err) =>
 	err ? console.log('Server error', err) : console.log(`Server OK | Port: ${port}`),

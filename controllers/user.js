@@ -1,6 +1,8 @@
 import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import UserModel from '../models/User.js';
+import CartModel from '../models/Cart.js';
+import CartItemModel from '../models/CartItem.js';
 import mapUser from '../helpers/map-user.js';
 import { generateToken } from '../helpers/token.js';
 import { ROLE } from '../constants/roles.js';
@@ -24,8 +26,12 @@ export const register = async (req, res) => {
 			password: passwordHash,
 		});
 
+		const userId = user.id;
+
+		await CartModel.create({ userId });
+
 		const token = generateToken({
-			id: user.id,
+			id: userId,
 		});
 
 		res.cookie('token', token, { httpOnly: true }).send({
@@ -156,6 +162,13 @@ export const getAllRoles = async (_, res) => {
 export const remove = async (req, res) => {
 	try {
 		const userId = req.params.id;
+
+		const cart = await CartModel.findOne({ userId });
+
+		await CartItemModel.deleteMany({ cartId: cart._id });
+
+		await CartModel.deleteOne({ _id: cart._id });
+
 		await UserModel.deleteOne({ _id: userId });
 
 		res.send({
