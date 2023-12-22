@@ -1,5 +1,5 @@
 import express from 'express';
-import checkAuth from '../middlewares/check-auth.js';
+import { checkAuth } from '../middlewares/index.js';
 import * as CartItemController from '../controllers/cart-item.js';
 
 const router = express.Router();

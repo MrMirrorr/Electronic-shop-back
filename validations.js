@@ -25,7 +25,7 @@ export const productCreateValidation = [
 	body('categoryId', 'Выберите категорию').isNumeric(),
 	body('price', 'Введите цену числом').isNumeric(),
 	body('amount', 'Введите количество числом').isNumeric(),
-	body('imageUrl', 'Неверная ссылка на изображение').optional().isURL(),
+	body('imageUrl', 'Неверная ссылка на изображение').optional().isString(),
 	body('description', 'Введите описание. Не меньше 5 символов')
 		.isLength({ min: 5 })
 		.isString(),
@@ -33,4 +33,10 @@ export const productCreateValidation = [
 
 export const commentCreateValidation = [
 	body('content', 'Нечего отправлять. Вы не ввели комментарий.').isLength({ min: 1 }),
+];
+
+export const updateUserValidation = [
+	body('email', 'Неверный формат почты').isEmail(),
+	body('fullName', 'Укажите имя').isLength({ min: 3 }),
+	body('avatarUrl', 'Неверная ссылка на аватарку').optional().isString(),
 ];

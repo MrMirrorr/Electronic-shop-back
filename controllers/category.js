@@ -1,5 +1,6 @@
-import CategoryModel from '../models/Category.js';
+import { CategoryModel } from '../models/index.js';
 import mapCategory from '../helpers/map-category.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // create new category
 export const create = async (req, res) => {
@@ -13,10 +14,7 @@ export const create = async (req, res) => {
 			data: mapCategory(category),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось создать категорию',
-		});
+		serverErrorHandler(res, err, 'Не удалось создать категорию');
 	}
 };
 
@@ -30,10 +28,7 @@ export const getAll = async (_, res) => {
 			data: categories.map(mapCategory),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось получить категории',
-		});
+		serverErrorHandler(res, err, 'Не удалось получить категории');
 	}
 };
 
@@ -48,11 +43,7 @@ export const remove = async (req, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось удалить категорию',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось удалить категорию');
 	}
 };
 
@@ -71,10 +62,6 @@ export const update = async (req, res) => {
 			data: newCategory,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось изменить категорию',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось изменить категорию');
 	}
 };

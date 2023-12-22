@@ -1,5 +1,5 @@
 import express from 'express';
-import checkAuth from '../middlewares/check-auth.js';
+import { checkAuth } from '../middlewares/index.js';
 import * as FavoriteController from '../controllers/favorite.js';
 
 const router = express.Router();

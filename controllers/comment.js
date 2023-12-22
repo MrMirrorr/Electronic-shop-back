@@ -1,17 +1,10 @@
-import mongoose from 'mongoose';
-import { validationResult } from 'express-validator';
+import { CommentModel, ProductModel } from '../models/index.js';
 import mapComment from '../helpers/map-comment.js';
-import CommentModel from '../models/Comment.js';
-import ProductModel from '../models/Product.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // create new comment
 export const create = async (req, res) => {
 	try {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).send(errors.array()[0]);
-		}
-
 		const content = req.body.content;
 		const productId = req.params.id;
 		const author = req.user.id;
@@ -32,10 +25,7 @@ export const create = async (req, res) => {
 			data: mapComment(newComment),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось создать комментарий',
-		});
+		serverErrorHandler(res, err, 'Не удалось создать комментарий');
 	}
 };
 
@@ -55,10 +45,6 @@ export const remove = async (req, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось удалить комментарий',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось удалить комментарий');
 	}
 };

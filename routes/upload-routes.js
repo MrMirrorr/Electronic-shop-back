@@ -1,6 +1,5 @@
 import express from 'express';
-import imageUpload from '../middlewares/image-upload.js';
-import checkAuth from '../middlewares/check-auth.js';
+import { checkAuth, imageUpload } from '../middlewares/index.js';
 import * as UploadController from '../controllers/upload.js';
 
 const router = express.Router();

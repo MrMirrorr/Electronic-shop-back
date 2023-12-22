@@ -1,5 +1,6 @@
+import { FavoriteModel } from '../models/index.js';
 import mapFavorite from '../helpers/map-favorite.js';
-import FavoriteModel from '../models/Favorite.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // create favorite
 export const create = async (req, res) => {
@@ -20,10 +21,7 @@ export const create = async (req, res) => {
 			res.send({ operation: 'CREATE', data: { favorite: mapFavorite(favorite) } });
 		}
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось добавить/удалить товар в/из избранное',
-		});
+		serverErrorHandler(res, err, 'Не удалось добавить/удалить товар в/из избранное');
 	}
 };
 
@@ -40,11 +38,7 @@ export const remove = async (req, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось удалить товар из избранного',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось удалить товар из избранного');
 	}
 };
 
@@ -61,10 +55,6 @@ export const getAll = async (req, res) => {
 			data: { favorites: favorites.map(mapFavorite) },
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось получить избранные товары',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось получить избранные товары');
 	}
 };

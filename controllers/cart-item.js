@@ -1,6 +1,6 @@
-import CartModel from '../models/Cart.js';
-import CartItemModel from '../models/CartItem.js';
+import { CartModel, CartItemModel } from '../models/index.js';
 import mapCartItem from '../helpers/map-cart-item.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // create cart item
 export const create = async (req, res) => {
@@ -41,10 +41,7 @@ export const create = async (req, res) => {
 			data: { cartItem: mapCartItem(cartItem) },
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось добавить товар в корзину',
-		});
+		serverErrorHandler(res, err, 'Не удалось добавить товар в корзину');
 	}
 };
 
@@ -67,11 +64,7 @@ export const remove = async (req, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось удалить товар из корзины',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось удалить товар из корзины');
 	}
 };
 
@@ -90,10 +83,6 @@ export const removeMany = async (req, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось удалить товары из корзины',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось удалить товары пользователя из корзины');
 	}
 };

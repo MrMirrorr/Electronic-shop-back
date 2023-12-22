@@ -1,5 +1,6 @@
-import CartModel from '../models/Cart.js';
+import { CartModel } from '../models/index.js';
 import mapCart from '../helpers/map-cart.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // create cart
 export const create = async (req, res) => {
@@ -14,15 +15,13 @@ export const create = async (req, res) => {
 			data: cart,
 		});
 	} catch (err) {
-		console.log(err);
 		if (err.code === 11000) {
+			console.log(err);
 			return res.status(500).send({
 				error: 'Корзина уже существует',
 			});
 		}
-		res.status(500).send({
-			error: 'Не удалось создать корзину',
-		});
+		serverErrorHandler(res, err, 'Не удалось создать корзину');
 	}
 };
 
@@ -41,9 +40,6 @@ export const getOne = async (req, res) => {
 			data: mapCart(cart),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось получить корзину',
-		});
+		serverErrorHandler(res, err, 'Не удалось получить корзину');
 	}
 };

@@ -1,6 +1,6 @@
+import { ProductModel, CommentModel } from '../models/index.js';
 import mapProduct from '../helpers/map-product.js';
-import ProductModel from '../models/Product.js';
-import CommentModel from '../models/Comment.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // create new product
 export const create = async (req, res) => {
@@ -19,9 +19,7 @@ export const create = async (req, res) => {
 			data: mapProduct(product),
 		});
 	} catch (err) {
-		res.status(500).send({
-			error: 'Не удалось создать товар',
-		});
+		serverErrorHandler(res, err, 'Не удалось создать товар');
 	}
 };
 
@@ -59,10 +57,7 @@ export const getAll = async (req, res) => {
 			},
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось получить товары',
-		});
+		serverErrorHandler(res, err, 'Не удалось получить товары');
 	}
 };
 
@@ -82,10 +77,7 @@ export const getOne = async (req, res) => {
 			data: mapProduct(product),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось получить товар',
-		});
+		serverErrorHandler(res, err, 'Не удалось получить товар');
 	}
 };
 
@@ -107,11 +99,7 @@ export const remove = async (req, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось удалить товар',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось удалить товар');
 	}
 };
 
@@ -133,10 +121,6 @@ export const update = async (req, res) => {
 			data: mapProduct(newProduct),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось изменить категорию',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось изменить категорию');
 	}
 };

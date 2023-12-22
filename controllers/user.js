@@ -1,22 +1,19 @@
-import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
-import UserModel from '../models/User.js';
-import CartModel from '../models/Cart.js';
-import CartItemModel from '../models/CartItem.js';
-import OrderModel from '../models/Order.js';
-import CommentModel from '../models/Comment.js';
+import {
+	UserModel,
+	CartModel,
+	CartItemModel,
+	OrderModel,
+	CommentModel,
+} from '../models/index.js';
 import mapUser from '../helpers/map-user.js';
 import { generateToken } from '../helpers/token.js';
 import { ROLE } from '../constants/roles.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // register
 export const register = async (req, res) => {
 	try {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).send(errors.array());
-		}
-
 		const password = req.body.password;
 		const salt = await bcrypt.genSalt(10);
 		const passwordHash = await bcrypt.hash(password, salt);
@@ -41,26 +38,19 @@ export const register = async (req, res) => {
 			data: mapUser(user),
 		});
 	} catch (err) {
-		console.log(err);
 		if (err.code === 11000) {
+			console.log(err);
 			return res.status(500).send({
 				error: 'Этот email уже зарегистрирован',
 			});
 		}
-		res.status(500).send({
-			error: 'Не удалось зарегистрироваться',
-		});
+		serverErrorHandler(res, err, 'Не удалось зарегистрироваться');
 	}
 };
 
 // login
 export const login = async (req, res) => {
 	try {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).send(errors.array()[0]);
-		}
-
 		const user = await UserModel.findOne({ email: req.body.email });
 
 		if (!user) {
@@ -86,10 +76,7 @@ export const login = async (req, res) => {
 			data: mapUser(user),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось авторизоваться',
-		});
+		serverErrorHandler(res, err, 'Не удалось авторизоваться');
 	}
 };
 
@@ -109,10 +96,7 @@ export const getMe = async (req, res) => {
 			data: mapUser(user),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Нет доступа',
-		});
+		serverErrorHandler(res, err, 'Нет доступа');
 	}
 };
 
@@ -124,10 +108,7 @@ export const logout = (_, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось выйти',
-		});
+		serverErrorHandler(res, err, 'Не удалось выйти');
 	}
 };
 
@@ -141,10 +122,7 @@ export const getAllUsers = async (_, res) => {
 			data: users.map(mapUser),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось получить пользователей',
-		});
+		serverErrorHandler(res, err, 'Не удалось получить пользователей');
 	}
 };
 
@@ -184,11 +162,7 @@ export const remove = async (req, res) => {
 			success: true,
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось удалить пользователя',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось удалить пользователя');
 	}
 };
 
@@ -211,11 +185,7 @@ export const updateRoleId = async (req, res) => {
 			data: mapUser(newUser),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось изменить роль пользователя',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось изменить роль пользователя');
 	}
 };
 
@@ -223,7 +193,11 @@ export const updateRoleId = async (req, res) => {
 export const update = async (req, res) => {
 	try {
 		const userId = req.user.id;
-		const newUserData = { email: req.body.email, fullName: req.body.fullName };
+		const newUserData = {
+			email: req.body.email,
+			fullName: req.body.fullName,
+			avatarUrl: req.body.avatarUrl,
+		};
 
 		const newUser = await UserModel.findByIdAndUpdate(userId, newUserData, {
 			returnDocument: 'after',
@@ -234,15 +208,12 @@ export const update = async (req, res) => {
 			data: mapUser(newUser),
 		});
 	} catch (err) {
-		console.log(err);
 		if (err.code === 11000) {
+			console.log(err);
 			return res.status(500).send({
 				error: 'Этот email уже занят',
 			});
 		}
-		res.status(500).send({
-			error: 'Не удалось изменить данные пользователя',
-			success: false,
-		});
+		serverErrorHandler(res, err, 'Не удалось изменить данные пользователя');
 	}
 };

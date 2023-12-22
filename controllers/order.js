@@ -1,5 +1,6 @@
+import { OrderModel } from '../models/index.js';
 import mapOrder from '../helpers/map-order.js';
-import OrderModel from '../models/Order.js';
+import serverErrorHandler from '../utils/server-error-handler.js';
 
 // create order
 export const create = async (req, res) => {
@@ -18,10 +19,7 @@ export const create = async (req, res) => {
 			data: mapOrder(order),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось создать заказ',
-		});
+		serverErrorHandler(res, err, 'Не удалось создать заказ');
 	}
 };
 
@@ -39,9 +37,6 @@ export const getAll = async (req, res) => {
 			data: orders.map(mapOrder),
 		});
 	} catch (err) {
-		console.log(err);
-		res.status(500).send({
-			error: 'Не удалось получить заказы',
-		});
+		serverErrorHandler(res, err, 'Не удалось получить заказы');
 	}
 };
