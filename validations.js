@@ -22,7 +22,7 @@ export const productCreateValidation = [
 	body('title', 'Введите заголовок товара. Не меньше 3 символов')
 		.isLength({ min: 3 })
 		.isString(),
-	body('categoryId', 'Выберите категорию').isNumeric(),
+	body('categoryId', 'Выберите категорию').isString(),
 	body('price', 'Введите цену числом').isNumeric(),
 	body('amount', 'Введите количество числом').isNumeric(),
 	body('imageUrl', 'Неверная ссылка на изображение').optional().isString(),

@@ -2,6 +2,7 @@ import 'dotenv/config.js';
 import express from 'express';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
+import axios from 'axios';
 
 import {
 	authRoutes,
@@ -48,6 +49,19 @@ app.use('/items', cartItemRoutes);
 app.use('/orders', orderRoutes);
 // favorite
 app.use('/favorites', favoriteRoutes);
+// currency rates api
+app.get('/currency-rates', async (_, res) => {
+	try {
+		const response = await axios.get(
+			'https://www.agroprombank.com/xmlinformer.php?type=official',
+		);
+		res.set('Content-Type', 'text/xml');
+		res.send(response.data);
+	} catch (error) {
+		console.error('Error fetching currency rates', error);
+		res.status(500).send('Error fetching currency rates');
+	}
+});
 
 app.listen(port, (err) =>
 	err ? console.log('Server error', err) : console.log(`Server OK | Port: ${port}`),

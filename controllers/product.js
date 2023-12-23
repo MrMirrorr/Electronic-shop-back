@@ -1,4 +1,10 @@
-import { ProductModel, CommentModel } from '../models/index.js';
+import {
+	ProductModel,
+	CommentModel,
+	CartModel,
+	CartItemModel,
+	FavoriteModel,
+} from '../models/index.js';
 import mapProduct from '../helpers/map-product.js';
 import serverErrorHandler from '../utils/server-error-handler.js';
 
@@ -90,7 +96,27 @@ export const remove = async (req, res) => {
 
 		const commentsToDelete = product.comments.map((comment) => comment._id);
 
-		await CommentModel.deleteMany({ _id: { $in: commentsToDelete } });
+		if (commentsToDelete.length > 0) {
+			await CommentModel.deleteMany({ _id: { $in: commentsToDelete } });
+		}
+
+		const cartItems = await CartItemModel.find({ productId }, '_id').lean();
+		const cartItemIds = cartItems.map((item) => item._id);
+
+		if (cartItemIds.length > 0) {
+			await CartItemModel.deleteMany({ productId });
+
+			await CartModel.updateMany(
+				{ items: { $in: cartItemIds } },
+				{ $pull: { items: { $in: cartItemIds } } },
+			);
+		}
+
+		const favorites = await FavoriteModel.find({ product: productId });
+
+		if (favorites.length > 0) {
+			await FavoriteModel.deleteMany({ product: productId });
+		}
 
 		await ProductModel.deleteOne({ _id: productId });
 
